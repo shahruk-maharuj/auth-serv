@@ -4,9 +4,13 @@
   "description": "The user management service",
   "main": "index.js",
   "scripts": {
-    "dev": "node src/server.js",
+    "dev": "node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Shahruk Maharuj <shahruk@codewithshahruk.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "typescript": "^5.8.3"
+  }
 }
