@@ -8,6 +8,11 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Auth Service!');
 });
 
+app.post('/auth/register', (req, res) => {
+  const token = 'someToken'; // or generated JWT
+  res.status(201).json({ token });
+});
+
 // global error handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
