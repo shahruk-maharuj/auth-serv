@@ -36,6 +36,8 @@ describe('POST /auth/register', () => {
       ).toEqual(expect.stringContaining('json'));
     });
 
+    it('should persist the user in the database', async () => {});
+
     describe('Fields are missing', () => {
       it('should return 400 status code', () => {
         // Test implementation
