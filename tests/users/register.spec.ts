@@ -35,7 +35,7 @@ describe('POST /auth/register', () => {
       const response = await request(app).post('/auth/register').send(userData);
       // Assert
       expect(response.statusCode).toBe(201);
-      expect(response.body).toHaveProperty('token');
+      expect(response.body).toHaveProperty('id');
     });
 
     it('should return valid json response', async () => {
@@ -75,10 +75,20 @@ describe('POST /auth/register', () => {
       expect(users[0].email).toBe(userData.email);
     });
 
-    describe('Fields are missing', () => {
-      it('should return 400 status code', () => {
-        // Test implementation
-      });
+    it('should return an id of the created user', async () => {
+      // Arrange
+      const userData = {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        password: 'password123',
+      };
+      // Act
+      const response = await request(app).post('/auth/register').send(userData);
+      // Assert
+      expect(response.body).toHaveProperty('id');
     });
+
+    describe('Fields are missing', () => {});
   });
 });
