@@ -114,5 +114,5 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
   },
-  "include": ["src/**/*", "src/app.spec.ts", "src", "tests", "scripts"]
+  "include": ["src/**/*", "src/app.spec.ts", "src", "tests"]
 }
