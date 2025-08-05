@@ -2,8 +2,16 @@ import { config } from 'dotenv';
 import path from 'path';
 config({ path: path.join(__dirname, `../../.env.${process.env.NODE_ENV}`) });
 
-const { PORT, NODE_ENV, DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } =
-  process.env;
+const {
+  PORT,
+  NODE_ENV,
+  DB_HOST,
+  DB_PORT,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_NAME,
+  REFRESH_TOKEN_SECRET,
+} = process.env;
 
 export const Config = {
   port: PORT,
@@ -14,5 +22,6 @@ export const Config = {
     username: DB_USERNAME,
     password: DB_PASSWORD,
     name: DB_NAME,
+    refreshTokenSecret: REFRESH_TOKEN_SECRET,
   },
 };
