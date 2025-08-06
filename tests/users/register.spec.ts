@@ -179,6 +179,32 @@ describe('POST /auth/register', () => {
       expect(isJwt(refreshToken)).toBeTruthy();
     });
 
+    it('should store the refresh token in the database', async () => {
+      // Arrange
+      const userData = {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        password: 'password123',
+      };
+
+      const response = await request(app).post('/auth/register').send(userData);
+
+      // Assert
+      const refreshTokenRepo = connection.getRepository('RefreshToken');
+      // const refreshTokens = await refreshTokenRepo.find();
+
+      console.log('Response body:', response.body);
+      const tokens = await refreshTokenRepo
+        .createQueryBuilder('refreshToken')
+        .where('refreshToken.userId = :userId', {
+          userId: (response.body as Record<string, string>).id,
+        })
+        .getMany();
+      console.log('Tokens found:', tokens);
+      expect(tokens).toHaveLength(1);
+    });
+
     describe('Fields are missing', () => {
       it('should return 400 status code if email field is missing', async () => {
         // Arrange
