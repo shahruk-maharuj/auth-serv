@@ -1,10 +1,10 @@
-import request from 'supertest';
 import createJWKSMock from 'mock-jwks';
+import request from 'supertest';
 import { DataSource } from 'typeorm';
-import { AppDataSource } from '../../src/config/data-source';
 import app from '../../src/app';
-import { User } from '../../src/entity/User';
+import { AppDataSource } from '../../src/config/data-source';
 import { Roles } from '../../src/constants';
+import { User } from '../../src/entity/User';
 
 describe('GET /auth/self', () => {
   let connection: DataSource;
@@ -65,7 +65,38 @@ describe('GET /auth/self', () => {
         .send();
       // Assert
       // Check if user id matches with registered user
-      expect((response.body as { user: { id: number } }).user.id).toBe(data.id);
+      expect((response.body as Record<string, string>).id).toBe(data.id);
+    });
+
+    it('should not return the password field', async () => {
+      // Register user
+      const userData = {
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john.doe@example.com',
+        password: 'password123',
+      };
+
+      const userRepository = connection.getRepository(User);
+      const data = await userRepository.save({
+        ...userData,
+        role: Roles.CUSTOMER,
+      });
+
+      // Generate token
+      const accessToken = jwks.token({ sub: String(data.id), role: data.role });
+      // Add token to cookie
+      const response = await request(app)
+        .get('/auth/self')
+        .set('Cookie', [`accessToken=${accessToken};`])
+        .send();
+      console.log(response.body);
+
+      // Assert
+      // Check if user id matches with registered user
+      expect(response.body as Record<string, string>).not.toHaveProperty(
+        'password',
+      );
     });
   });
 });
