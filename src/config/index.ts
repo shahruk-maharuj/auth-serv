@@ -1,7 +1,14 @@
 import { config } from 'dotenv';
 import path from 'path';
-config({ path: path.join(__dirname, `../../.env.${process.env.NODE_ENV}`) });
 
+// Determine which env file to load
+const envFile = process.env.NODE_ENV
+  ? `.env.${process.env.NODE_ENV}`
+  : '.env.dev'; // fallback for development
+
+config({ path: path.join(__dirname, `../../${envFile}`) });
+
+// Destructure environment variables
 const {
   PORT,
   NODE_ENV,
@@ -14,18 +21,23 @@ const {
   JWKS_URI,
 } = process.env;
 
+// Optional: throw if critical variables are missing
+if (!DB_PASSWORD) {
+  throw new Error('❌ DB_PASSWORD is missing from your environment file.');
+}
+
 export const Config = {
-  port: PORT,
-  nodeEnv: NODE_ENV,
+  port: PORT || '5501',
+  nodeEnv: NODE_ENV || 'dev',
   db: {
-    host: DB_HOST,
-    port: DB_PORT,
-    username: DB_USERNAME,
+    host: DB_HOST || 'localhost',
+    port: DB_PORT || '5432',
+    username: DB_USERNAME || 'postgres',
     password: DB_PASSWORD,
-    name: DB_NAME,
-    refreshTokenSecret: REFRESH_TOKEN_SECRET,
+    name: DB_NAME || '',
+    refreshTokenSecret: REFRESH_TOKEN_SECRET || 'secretKey',
   },
   jwks: {
-    uri: JWKS_URI,
+    uri: JWKS_URI || '',
   },
 };
