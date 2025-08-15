@@ -7,7 +7,7 @@ import { RefreshToken } from '../entity/RefreshToken';
 import logger from '../config/logger';
 
 export default expressjwt({
-  secret: Config.db.refreshTokenSecret!,
+  secret: Config.db.refreshTokenSecret,
   algorithms: ['HS256'],
   getToken(req: Request) {
     const { refreshToken } = req.cookies as AuthCookies;

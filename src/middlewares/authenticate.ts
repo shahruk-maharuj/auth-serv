@@ -6,7 +6,7 @@ import { AuthCookies } from '../types';
 
 export default expressjwt({
   secret: jwksClient.expressJwtSecret({
-    jwksUri: Config.jwks.uri!,
+    jwksUri: Config.jwks.uri,
     cache: true,
     rateLimit: true,
   }) as GetVerificationKey,
