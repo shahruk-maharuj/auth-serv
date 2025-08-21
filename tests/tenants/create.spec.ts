@@ -1,20 +1,35 @@
-import { DataSource } from 'typeorm';
+import createJWKSMock from 'mock-jwks';
 import request from 'supertest';
-import { AppDataSource } from '../../src/config/data-source';
+import { DataSource } from 'typeorm';
 import app from '../../src/app';
+import { AppDataSource } from '../../src/config/data-source';
+import { Roles } from '../../src/constants';
 import { Tenant } from '../../src/entity/Tenant';
 
 describe('POST /tenants', () => {
   let connection: DataSource;
+  let jwks: ReturnType<typeof createJWKSMock>;
+  let adminToken: string;
 
   beforeAll(async () => {
     connection = await AppDataSource.initialize();
+    jwks = createJWKSMock('http://localhost:5501');
   });
 
   beforeEach(async () => {
     // database truncate
     await connection.dropDatabase();
     await connection.synchronize();
+    jwks.start();
+
+    adminToken = jwks.token({
+      sub: '1',
+      role: Roles.ADMIN,
+    });
+  });
+
+  afterEach(() => {
+    jwks.stop();
   });
 
   afterAll(async () => {
@@ -27,7 +42,10 @@ describe('POST /tenants', () => {
         name: 'Tenant 1',
         address: 'Address 1',
       };
-      const response = await request(app).post('/tenants').send(tenantData);
+      const response = await request(app)
+        .post('/tenants')
+        .set('Cookie', [`accessToken=${adminToken}`])
+        .send(tenantData);
       expect(response.status).toBe(201);
     });
 
@@ -37,13 +55,31 @@ describe('POST /tenants', () => {
         address: 'Address 1',
       };
 
-      await request(app).post('/tenants').send(tenantData);
+      await request(app)
+        .post('/tenants')
+        .set('Cookie', [`accessToken=${adminToken}`])
+        .send(tenantData);
+
       const tenantRepository = connection.getRepository(Tenant);
       const tenants = await tenantRepository.find();
 
       expect(tenants).toHaveLength(1);
       expect(tenants[0].name).toBe(tenantData.name);
       expect(tenants[0].address).toBe(tenantData.address);
+    });
+
+    it('should return 401 if user is not authenticated', async () => {
+      const tenantData = {
+        name: 'Tenant 1',
+        address: 'Address 1',
+      };
+
+      const response = await request(app).post('/tenants').send(tenantData);
+      expect(response.statusCode).toBe(401);
+      const tenantRepository = connection.getRepository(Tenant);
+      const tenants = await tenantRepository.find();
+
+      expect(tenants).toHaveLength(0);
     });
   });
 });
