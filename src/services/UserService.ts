@@ -1,14 +1,13 @@
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 import { Repository } from 'typeorm';
-import { Roles } from '../constants';
 import { User } from '../entity/User';
 import { UserData } from '../types';
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
-  async create({ firstName, lastName, email, password }: UserData) {
+  async create({ firstName, lastName, email, password, role }: UserData) {
     const existingUser = await this.userRepository.findOne({
       where: { email },
     });
@@ -26,7 +25,7 @@ export class UserService {
         lastName,
         email,
         password: hashedPassword,
-        role: Roles.CUSTOMER,
+        role,
       });
     } catch {
       const error = createHttpError(
