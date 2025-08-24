@@ -13,6 +13,8 @@ export default tseslint.config(
       'eslint.config.mjs',
       'jest.config.js',
       '**/*.mjs',
+      '*.spec.ts',
+      'tests/',
     ],
   },
   {
@@ -23,8 +25,8 @@ export default tseslint.config(
       },
     },
     rules: {
-      // 'no-console': 'error',
-      // 'dot-notation': 'error',
+      'no-console': 'error',
+      'dot-notation': 'error',
       '@typescript-eslint/no-misused-promises': 'off',
     },
   },
