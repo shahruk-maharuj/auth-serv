@@ -1,14 +1,14 @@
 import express, { NextFunction, Response } from 'express';
-import { TenantController } from '../controllers/TenantController';
-import { TenantService } from '../services/TenantService';
 import { AppDataSource } from '../config/data-source';
-import { Tenant } from '../entity/Tenant';
 import logger from '../config/logger';
+import { Roles } from '../constants';
+import { TenantController } from '../controllers/TenantController';
+import { Tenant } from '../entity/Tenant';
 import authenticate from '../middlewares/authenticate';
 import { canAccess } from '../middlewares/canAccess';
-import { Roles } from '../constants';
-import tenantValidator from '../validators/tenant-validator';
+import { TenantService } from '../services/TenantService';
 import { CreateTenantRequest } from '../types';
+import tenantValidator from '../validators/tenant-validator';
 
 const router = express.Router();
 
@@ -35,7 +35,9 @@ router.patch(
 );
 
 router.get('/', (req, res, next) => tenantController.getAll(req, res, next));
-router.get('/:id', (req, res, next) => tenantController.getOne(req, res, next));
+router.get('/:id', authenticate, canAccess([Roles.ADMIN]), (req, res, next) =>
+  tenantController.getOne(req, res, next),
+);
 
 router.delete(
   '/:id',
