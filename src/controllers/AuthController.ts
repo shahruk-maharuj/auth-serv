@@ -3,11 +3,11 @@ import { validationResult } from 'express-validator';
 import createHttpError from 'http-errors';
 import { JwtPayload } from 'jsonwebtoken';
 import { Logger } from 'winston';
+import { Roles } from '../constants';
 import { CredentialService } from '../services/CredentialService';
 import { TokenService } from '../services/TokenService';
 import { UserService } from '../services/UserService';
 import { AuthRequest, RegisterUserRequest } from '../types';
-import { Roles } from '../constants';
 
 export class AuthController {
   constructor(
@@ -94,9 +94,7 @@ export class AuthController {
     });
 
     try {
-      const user = await this.userService.findByEmail({
-        email,
-      });
+      const user = await this.userService.findByEmailWithPassword(email);
 
       if (!user) {
         const err = createHttpError(400, 'Email or password does not match');
