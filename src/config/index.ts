@@ -19,12 +19,8 @@ const {
   DB_NAME,
   REFRESH_TOKEN_SECRET,
   JWKS_URI,
+  PRIVATE_KEY,
 } = process.env;
-
-// Optional: throw if critical variables are missing
-if (!DB_PASSWORD) {
-  throw new Error('❌ DB_PASSWORD is missing from your environment file.');
-}
 
 export const Config = {
   port: PORT || '5501',
@@ -40,4 +36,5 @@ export const Config = {
   jwks: {
     uri: JWKS_URI || '',
   },
+  privateKey: PRIVATE_KEY,
 };
