@@ -4,7 +4,7 @@ import { AppDataSource } from './config/data-source';
 import logger from './config/logger';
 
 const startServer = async () => {
-  const PORT = Config.port;
+  const PORT = Config.PORT;
   try {
     await AppDataSource.initialize();
     logger.info('Database connection established successfully.');

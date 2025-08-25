@@ -4,15 +4,15 @@ import { Config } from '.';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: Config.db.host,
-  port: Number(Config.db.port),
-  username: Config.db.username,
-  password: Config.db.password,
-  database: Config.db.name,
-  // Don't use this in production, Always keep synchronize false
+  host: Config.DB_HOST,
+  port: Number(Config.DB_PORT),
+  username: Config.DB_USERNAME,
+  password: Config.DB_PASSWORD,
+  database: Config.DB_NAME,
+  // Don't use this in production. Always keep false
   synchronize: false,
   logging: false,
   entities: ['src/entity/*.{ts,js}'],
-  migrations: ['src/migrations/*.{ts,js}'],
+  migrations: ['src/migration/*.{ts,js}'],
   subscribers: [],
 });

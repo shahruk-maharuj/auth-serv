@@ -13,21 +13,22 @@ describe('POST /users', () => {
   let jwks: ReturnType<typeof createJWKSMock>;
 
   beforeAll(async () => {
-    // Initialize JWKS mock and DB connection
-    jwks = createJWKSMock('http://127.0.0.1:5501');
-    await jwks.start();
+    jwks = createJWKSMock('http://localhost:5501');
     connection = await AppDataSource.initialize();
   });
 
   beforeEach(async () => {
-    // Clear database before each test
+    jwks.start();
+    // database truncate
     await connection.dropDatabase();
     await connection.synchronize();
   });
 
+  afterEach(() => {
+    jwks.stop();
+  });
+
   afterAll(async () => {
-    // Stop JWKS and destroy DB connection
-    await jwks.stop();
     await connection.destroy();
   });
 
@@ -51,11 +52,11 @@ describe('POST /users', () => {
         role: Roles.MANAGER,
       };
 
+      // Add token to cookie
       await request(app)
         .post('/users')
         .set('Cookie', [`accessToken=${adminToken}`])
         .send(userData);
-
       const userRepository = connection.getRepository(User);
       const users = await userRepository.find();
       expect(users).toHaveLength(1);
@@ -63,6 +64,7 @@ describe('POST /users', () => {
     });
 
     it('should create a manager user', async () => {
+      // Create tenant
       const tenant = await createTenant(connection.getRepository(Tenant));
 
       const adminToken = jwks.token({
@@ -70,6 +72,7 @@ describe('POST /users', () => {
         role: Roles.ADMIN,
       });
 
+      // Register user
       const userData = {
         firstName: 'John',
         lastName: 'Doe',
@@ -79,11 +82,11 @@ describe('POST /users', () => {
         role: Roles.MANAGER,
       };
 
+      // Add token to cookie
       await request(app)
         .post('/users')
         .set('Cookie', [`accessToken=${adminToken}`])
         .send(userData);
-
       const userRepository = connection.getRepository(User);
       const users = await userRepository.find();
       expect(users).toHaveLength(1);
@@ -91,6 +94,7 @@ describe('POST /users', () => {
     });
 
     it('should return 403 if non admin user tries to create a user', async () => {
+      // Create tenant first
       const tenant = await createTenant(connection.getRepository(Tenant));
 
       const nonAdminToken = jwks.token({
@@ -106,6 +110,7 @@ describe('POST /users', () => {
         tenantId: tenant.id,
       };
 
+      // Add token to cookie
       const response = await request(app)
         .post('/users')
         .set('Cookie', [`accessToken=${nonAdminToken}`])
@@ -115,6 +120,7 @@ describe('POST /users', () => {
 
       const userRepository = connection.getRepository(User);
       const users = await userRepository.find();
+
       expect(users).toHaveLength(0);
     });
   });

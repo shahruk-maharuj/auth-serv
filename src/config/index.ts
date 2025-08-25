@@ -23,18 +23,14 @@ const {
 } = process.env;
 
 export const Config = {
-  port: PORT || '5501',
-  nodeEnv: NODE_ENV || 'dev',
-  db: {
-    host: DB_HOST || 'localhost',
-    port: DB_PORT || '5432',
-    username: DB_USERNAME || 'postgres',
-    password: DB_PASSWORD,
-    name: DB_NAME || '',
-    refreshTokenSecret: REFRESH_TOKEN_SECRET || 'secretKey',
-  },
-  jwks: {
-    uri: JWKS_URI || '',
-  },
+  PORT,
+  NODE_ENV,
+  DB_HOST,
+  DB_PORT,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_NAME,
+  REFRESH_TOKEN_SECRET,
+  JWKS_URI,
   PRIVATE_KEY,
 };
