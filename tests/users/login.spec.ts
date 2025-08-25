@@ -49,8 +49,8 @@ describe('POST /auth/login', () => {
         .send({ email: userData.email, password: userData.password });
 
       // Assert
-      let accessToken = null;
-      let refreshToken = null;
+      let accessToken: string | null = null;
+      let refreshToken: string | null = null;
       const setCookieHeader = response.headers?.['set-cookie'];
       const cookies: string[] = Array.isArray(setCookieHeader)
         ? setCookieHeader

@@ -31,6 +31,9 @@ export const Config = {
   DB_PASSWORD,
   DB_NAME,
   REFRESH_TOKEN_SECRET,
-  JWKS_URI,
+  JWKS_URI:
+    NODE_ENV === 'test'
+      ? 'http://localhost:5501/.well-known/jwks.json'
+      : JWKS_URI,
   PRIVATE_KEY,
 };
