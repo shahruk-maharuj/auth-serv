@@ -36,5 +36,5 @@ export const Config = {
   jwks: {
     uri: JWKS_URI || '',
   },
-  privateKey: PRIVATE_KEY,
+  PRIVATE_KEY,
 };

@@ -10,13 +10,13 @@ export class TokenService {
 
   generateAccessToken(payload: JwtPayload) {
     let privateKey: string;
-    if (!Config.privateKey) {
+    if (!Config.PRIVATE_KEY) {
       const error = createHttpError(500, 'Private key is not configured');
       throw error;
     }
 
     try {
-      privateKey = Config.privateKey;
+      privateKey = Config.PRIVATE_KEY;
     } catch {
       const error = createHttpError(500, 'Failed to read private key file');
       throw error;
