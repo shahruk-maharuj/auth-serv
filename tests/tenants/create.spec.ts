@@ -12,27 +12,28 @@ describe('POST /tenants', () => {
   let adminToken: string;
 
   beforeAll(async () => {
-    connection = await AppDataSource.initialize();
+    // Initialize JWKS mock and DB connection
     jwks = createJWKSMock('http://127.0.0.1:5501');
-  });
+    await jwks.start();
 
-  beforeEach(async () => {
-    // database truncate
-    await connection.dropDatabase();
-    await connection.synchronize();
-    jwks.start();
+    connection = await AppDataSource.initialize();
 
+    // Generate admin token once for all tests
     adminToken = jwks.token({
       sub: '1',
       role: Roles.ADMIN,
     });
   });
 
-  afterEach(() => {
-    jwks.stop();
+  beforeEach(async () => {
+    // Clear database before each test
+    await connection.dropDatabase();
+    await connection.synchronize();
   });
 
   afterAll(async () => {
+    // Stop JWKS and destroy DB connection
+    await jwks.stop();
     await connection.destroy();
   });
 
@@ -76,9 +77,9 @@ describe('POST /tenants', () => {
 
       const response = await request(app).post('/tenants').send(tenantData);
       expect(response.statusCode).toBe(401);
+
       const tenantRepository = connection.getRepository(Tenant);
       const tenants = await tenantRepository.find();
-
       expect(tenants).toHaveLength(0);
     });
 
@@ -97,10 +98,11 @@ describe('POST /tenants', () => {
         .post('/tenants')
         .set('Cookie', [`accessToken=${managerToken}`])
         .send(tenantData);
+
       expect(response.statusCode).toBe(403);
+
       const tenantRepository = connection.getRepository(Tenant);
       const tenants = await tenantRepository.find();
-
       expect(tenants).toHaveLength(0);
     });
   });
